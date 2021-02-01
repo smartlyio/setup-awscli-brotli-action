@@ -1,0 +1,38 @@
+name: 'Add brotli encoding understanding to Python used by awscli'
+description: >-
+  Inject brotli encoding file extension into Python's mimetypes db
+
+runs:
+  using: "composite"
+  steps:
+    - name: Add brotli encoding to Python interpreter used by awscli
+      run: |
+        PYTHON="$(head -n1 "$(readlink -f "$(which aws)")" | sed 's/^#! *//')"
+        echo "awscli is installed with $PYTHON as the interpreter"
+
+        hasbrotli() {
+            "$PYTHON" -c 'import mimetypes; import sys; sys.exit(".br" not in mimetypes.encodings_map)'
+        }
+
+        if hasbrotli; then
+            echo "$PYTHON already knows about brotli as a mime encoding"
+        fi
+
+        PREFIX="$("$PYTHON" -c 'import sys; print(sys.prefix)')"
+        MAJOR="$("$PYTHON" -c 'import sys; print(sys.version_info[0])')"
+        MINOR="$("$PYTHON" -c 'import sys; print(sys.version_info[1])')"
+        PYTHONLIB="${PREFIX}/lib/python${VERSION}"
+
+        echo "python interpreter is version ${MAJOR}.${MINOR} is located in $PREFIX"
+        echo "python libdir located at $PYTHONLIB"
+
+        cat <<EOF > sitecustomize.py
+        import mimetypes
+        mimetypes.encodings_map['.br'] = 'br'
+        EOF
+
+        echo "Installing brotli encoding mimetype"
+        sudo install -m 644 -o root -g root sitecustomize.py "${PYTHONLIB}/sitecustomize.py"
+        rm sitecustomize.py
+
+        hasbrotli
