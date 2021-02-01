@@ -14,6 +14,7 @@ runs:
         echo "awscli is installed with $PYTHON as the interpreter"
 
         hasbrotli() {
+            # Return 1 (bash error code) if .br not in encodings
             "$PYTHON" -c 'import mimetypes; import sys; sys.exit(".br" not in mimetypes.encodings_map)'
         }
 
@@ -22,11 +23,10 @@ runs:
         fi
 
         PREFIX="$("$PYTHON" -c 'import sys; print(sys.prefix)')"
-        MAJOR="$("$PYTHON" -c 'import sys; print(sys.version_info[0])')"
-        MINOR="$("$PYTHON" -c 'import sys; print(sys.version_info[1])')"
+        VERSION="$("$PYTHON" -c 'import sys; print("{}.{}".format(*sys.version_info[:2]))')"
         PYTHONLIB="${PREFIX}/lib/python${VERSION}"
 
-        echo "python interpreter is version ${MAJOR}.${MINOR} is located in $PREFIX"
+        echo "python interpreter is version ${VERSION} is located in $PREFIX"
         echo "python libdir located at $PYTHONLIB"
 
         cat <<EOF > sitecustomize.py
