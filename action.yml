@@ -6,6 +6,7 @@ runs:
   using: "composite"
   steps:
     - name: Add brotli encoding to Python interpreter used by awscli
+      shell: bash -eu -o pipefail
       run: |
         PYTHON="$(head -n1 "$(readlink -f "$(which aws)")" | sed 's/^#! *//')"
         echo "awscli is installed with $PYTHON as the interpreter"
