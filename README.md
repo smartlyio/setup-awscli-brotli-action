@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Add brotli encoding to Python interpreter used by awscli
-        uses: smartlyio/setup-awscli-brotli-action@master
+        uses: smartlyio/setup-awscli-brotli-action@v1
       - name: Upload
         run: |
           # This will have the correct mimetype in the bucket, instead of binary/octet-stream
