@@ -10,6 +10,46 @@ runs:
       run: |
         set -eu
         set -o pipefail
+
+        upgrade_awscli() {
+            local download_dir=
+            local install_dir=
+            local version_string=
+            download_dir="$(mktemp -d)"
+            install_dir="$(mktemp -d)"
+            bin_dir="$(mktemp -d)"
+            (
+                cd "$download_dir" &&
+                curl -fsSOL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" &&
+                unzip awscli-exe-linux-x86_64.zip &&
+                "${download_dir}/aws/install" -i "$install_dir" -b "$bin_dir"
+            )
+            echo "$bin_dir" >> "$GITHUB_PATH"
+            export PATH="$bin_dir:${PATH:+:${PATH}}"
+
+            echo "$PATH"
+            hash -r
+            which aws
+            version_string="$(aws --version)"
+            echo "AWS CLI version: $version_string"
+            [[ "$version_string" =~ .*ython/3\.9.*\ exe/.* ]]
+        }
+
+        version_string="$(aws --version)"
+        echo "AWS CLI version: $version_string"
+        if [[ "$version_string" =~ .*ython/3\.9.*\ exe/.* ]]; then
+            echo "Running with Python 3.9 compiled dist; no need to install"
+            exit 0
+        elif [[ "$version_string" =~ .*ython/[23]\.[0-8]\..*\ exe/.* ]]; then
+            echo "Running compiled aws cli dist without brotli; installing alternate awscli"
+            if upgrade_awscli; then
+                exit 0
+            else
+                echo "Failed to upgrade AWS cli"
+                exit 1
+            fi
+        fi
+
         PYTHON="$(head -n1 "$(readlink -f "$(which aws)")" | sed 's/^#! *//')"
         echo "awscli is installed with $PYTHON as the interpreter"
 
