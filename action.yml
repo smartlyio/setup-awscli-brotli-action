@@ -12,6 +12,7 @@ runs:
         set -o pipefail
 
         version_string="$(aws --version)"
+        echo "AWS CLI version: $version_string"
         if [[ "$version_string" =~ .*ython/3\.9.*\ exe/.* ]]; then
             echo "Running with Python 3.9 compiled dist; no need to install"
             exit 0
