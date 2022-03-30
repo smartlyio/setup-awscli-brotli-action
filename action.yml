@@ -10,6 +10,16 @@ runs:
       run: |
         set -eu
         set -o pipefail
+
+        version_string="$(aws --version)"
+        if [[ "$version_string" =~ .*ython/3\.[89].*\ exe/.* ]]; then
+            echo "Running with Python 3.9 compiled dist; no need to install"
+            exit 0
+        elif [[ "$version_string" =~ .*\ ython/[23]\.[0-7]\..*\ exe/.* ]]; then
+            echo "Running compiled aws cli dist without brotli; unable to proceed"
+            exit 1
+        fi
+
         PYTHON="$(head -n1 "$(readlink -f "$(which aws)")" | sed 's/^#! *//')"
         echo "awscli is installed with $PYTHON as the interpreter"
 
