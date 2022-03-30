@@ -15,7 +15,7 @@ runs:
         if [[ "$version_string" =~ .*ython/3\.[89].*\ exe/.* ]]; then
             echo "Running with Python 3.9 compiled dist; no need to install"
             exit 0
-        elif [[ "$version_string" =~ .*\ ython/[23]\.[0-7]\..*\ exe/.* ]]; then
+        elif [[ "$version_string" =~ .*ython/[23]\.[0-7]\..*\ exe/.* ]]; then
             echo "Running compiled aws cli dist without brotli; unable to proceed"
             exit 1
         fi
