@@ -32,13 +32,13 @@ runs:
             which aws
             version_string="$(aws --version)"
             echo "AWS CLI version: $version_string"
-            [[ "$version_string" =~ .*ython/3\.9.*\ exe/.* ]]
+            [[ "$version_string" =~ .*ython/3\.(9|[1-9][0-9]+).*\ exe/.* ]]
         }
 
         version_string="$(aws --version)"
         echo "AWS CLI version: $version_string"
-        if [[ "$version_string" =~ .*ython/3\.9.*\ exe/.* ]]; then
-            echo "Running with Python 3.9 compiled dist; no need to install"
+        if [[ "$version_string" =~ .*ython/3\.(9|[1-9][0-9]+).*\ exe/.* ]]; then
+            echo "Running with Python 3.9+ compiled dist; no need to install"
             exit 0
         elif [[ "$version_string" =~ .*ython/[23]\.[0-8]\..*\ exe/.* ]]; then
             echo "Running compiled aws cli dist without brotli; installing alternate awscli"
